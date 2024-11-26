@@ -9,6 +9,9 @@ use App\Models\Owner;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Select;
+use Illuminate\Database\Eloquent\Model;
+use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\CarResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -25,14 +28,22 @@ class CarResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('model')
+                    
+                TextInput::make('model')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('owner_id')
-                    ->numeric(),
+
+                Select::make('owner_id')
+                    ->relationship(
+                        'owner',
+                        'name',
+                        modifyQueryUsing: fn(Builder $query, Model $record) =>
+                        $query->doesntHave('car')
+                            ->orWhere('id', $record->owner?->id)
+                    ),
             ]);
     }
 
@@ -40,21 +51,25 @@ class CarResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
+
                 Tables\Columns\TextColumn::make('model')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('owner_id')
+
+                Tables\Columns\TextColumn::make('owner.name')
                     ->numeric()
                     ->sortable(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
             ->filters([
                 //
@@ -71,9 +86,7 @@ class CarResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-         
-        ];
+        return [];
     }
 
     public static function getPages(): array

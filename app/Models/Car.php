@@ -28,10 +28,5 @@ class Car extends Model
     {
         return $this->belongsTo(Owner::class);
     }
-
-
-    public function scopeUnassigned(Builder $query)
-    {
-        return $query->whereNull('owner_id');
-    }
+   
 }
