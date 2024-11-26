@@ -2,19 +2,21 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ItemResource\Pages;
-use App\Filament\Resources\ItemResource\RelationManagers;
-use App\Models\Item;
-use Faker\Provider\ar_EG\Text;
 use Filament\Forms;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use App\Models\Item;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Faker\Provider\ar_EG\Text;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Section;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\ItemResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\ItemResource\RelationManagers;
+use App\Filament\Resources\ItemResource\RelationManagers\ChildItemsRelationManager;
+use Filament\Tables\Actions\AttachAction;
 
 class ItemResource extends Resource
 {
@@ -35,14 +37,24 @@ class ItemResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            // mostro solo parent
+            ->modifyQueryUsing(fn(Builder $query) => $query->whereDoesntHave('parent_item'))
             ->columns([
+                TextColumn::make('id'),
                 TextColumn::make('item_name'),
+
+                // parent is null se è un parent
+                // TextColumn::make('parent_item.item_name')->label('Parent Item'),
+
+                // count childs
+                TextColumn::make('child_items_count')->counts('child_items')->label('Items'),
                 TextColumn::make('created_at')->dateTime(),
                 TextColumn::make('updated_at')->dateTime(),
             ])
             ->filters([
                 //
             ])
+        
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
@@ -56,7 +68,7 @@ class ItemResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ChildItemsRelationManager::class
         ];
     }
 
