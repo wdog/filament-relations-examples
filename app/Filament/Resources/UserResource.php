@@ -52,17 +52,17 @@ class UserResource extends Resource
                                     ->maxLength(255),
                             ]),
                         Tabs\Tab::make('Profile')
-                        ->icon('heroicon-o-link')
-                        ->schema([
+                            ->icon('heroicon-o-link')
+                            ->schema([
+                                // LOGIC RELATION HAS ONE
+                                Group::make([
+                                    TextInput::make('twitter_url')->prefix('https://twitter.com/'),
+                                    TextInput::make('telegram_url')->prefix('https://t.me/'),
+                                ])
+                                    ->columns(2)
+                                    ->relationship('profile')
 
-                            Group::make([
-                                TextInput::make('twitter_url')->prefix('https://twitter.com/'),
-                                TextInput::make('telegram_url')->prefix('https://t.me/'),
                             ])
-                                ->columns(2)
-                                ->relationship('profile')
-
-                        ])
                     ]),
             ]);
     }
