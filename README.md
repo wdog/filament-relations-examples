@@ -1,6 +1,6 @@
 # RELATION 1-1
 
-Business Rules:
+## Business Rules:
 
 -   The **Owner** can own one **Car**.
 -   The **Car** can be owned by one **Owner**.
