@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
@@ -28,22 +29,26 @@ class CarResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                    
-                TextInput::make('model')
-                    ->required()
-                    ->maxLength(255),
+                Section::make([
 
-                Select::make('owner_id')
-                    ->relationship(
-                        'owner',
-                        'name',
-                        modifyQueryUsing: fn(Builder $query, Model $record) =>
-                        $query->doesntHave('car')
-                            ->orWhere('id', $record->owner?->id)
-                    ),
+                    TextInput::make('name')
+                        ->label('Car Name')
+                        ->required()
+                        ->maxLength(255),
+
+                    TextInput::make('model')
+                        ->required()
+                        ->maxLength(255),
+
+                    Select::make('owner_id')
+                        ->relationship(
+                            'owner',
+                            'name',
+                            modifyQueryUsing: fn(Builder $query, Model $record) =>
+                            $query->doesntHave('car')
+                                ->orWhere('id', $record->owner?->id)
+                        ),
+                ])->columns(3)
             ]);
     }
 

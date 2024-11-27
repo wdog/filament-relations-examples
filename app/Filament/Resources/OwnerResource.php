@@ -12,10 +12,12 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Log;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\Placeholder;
 use App\Filament\Resources\OwnerResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\OwnerResource\Pages\EditOwner;
@@ -23,7 +25,6 @@ use App\Filament\Resources\OwnerResource\Pages\ListOwners;
 use App\Filament\Resources\OwnerResource\RelationManagers;
 use App\Filament\Resources\OwnerResource\Pages\CreateOwner;
 use App\Filament\Resources\OwnerResource\RelationManagers\CarRelationManager;
-use Filament\Forms\Components\Placeholder;
 
 class OwnerResource extends Resource
 {
@@ -41,32 +42,31 @@ class OwnerResource extends Resource
 
         return $form
             ->schema([
-
-                Placeholder::make('info')
-                    ->content(fn($record) => $record->car?->id)
-                    ->columnSpanFull(),
+                Section::make([
 
 
-                TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
+                    TextInput::make('name')
+                        ->label('Owner Name')
+                        ->required()
+                        ->maxLength(255),
 
-                // ! Relation HAS-ONE - Logic in class EditOwner()
-                Select::make('car_id')
-                    ->label('Assign Car')
-                    ->relationship(
-                        'car',
-                        'name',
-                        modifyQueryUsing: fn(Builder $query, Model $record) => $query
-                            ->whereDoesntHave('owner')
-                            ->orWhere('owner_id', $record->id)
-                    )
-                    // remove owner
-                    ->nullable()
-                    // default state
-                    ->formatStateUsing(fn(Model $record) => $record?->car?->id ?? '')
-                    ->searchable()
-                    ->preload(),
+                    // ! Relation HAS-ONE - Logic in class EditOwner()
+                    Select::make('car_id')
+                        ->label('Assigned Car')
+                        ->relationship(
+                            'car',
+                            'name',
+                            modifyQueryUsing: fn(Builder $query, Model $record) => $query
+                                ->whereDoesntHave('owner')
+                                ->orWhere('owner_id', $record->id)
+                        )
+                        // remove owner
+                        ->nullable()
+                        // default state
+                        ->formatStateUsing(fn(Model $record) => $record?->car?->id ?? '')
+                        ->searchable()
+                        ->preload(),
+                ])->columns(2)
             ]);
     }
 
