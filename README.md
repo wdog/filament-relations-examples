@@ -10,7 +10,8 @@
 ![alt text](.assets/relation-1-M.jpeg)
 
 
-### thief
+## Methods 
+### Thief
 
 ```php
 public function cars() {
@@ -18,7 +19,7 @@ public function cars() {
 }
 ```
 
-### car
+### Car
 
 ```php
 public function thief()
@@ -49,4 +50,6 @@ $car->thief()->associate($thief)->save();
 ## filamenthphp
 
 HasMany relationship we have to use the `AssociateAction`, `DeassociateAction`,
-or generate relation manager using `--associate` . The Form can be removed
+or generate relation manager using `--associate` . The Form can be removed.
+
+You can associate multiple Cars with `AssociateAction()-->multiple()`

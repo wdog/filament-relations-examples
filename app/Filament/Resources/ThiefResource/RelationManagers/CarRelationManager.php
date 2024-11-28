@@ -44,8 +44,12 @@ class CarRelationManager extends RelationManager
                 Tables\Actions\AssociateAction::make()
                     ->multiple()
                     ->recordSelectOptionsQuery(
-                        // onle free cars
+                        // Scope - show only free cars
                         fn(Builder $query) => $query->where('thief_id', null)
+
+                    )
+                    ->recordSelect(
+                        fn(Select $select) => $select->placeholder('Steal a Car'),
                     )
                     ->preloadRecordSelect(),
             ])
