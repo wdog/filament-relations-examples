@@ -16,7 +16,6 @@ export default defineConfig({
                 "app/Infolists/Components/**",
                 "app/Tables/Columns/**",
                 "app/Providers/**",
-                "public/css/hasnayeen/themes/**",
             ],
         }),
     ],
